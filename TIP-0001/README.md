@@ -19,13 +19,30 @@ Each TIP must include the following sections and be filled out properly to be co
 
 | Section                 | Description                                                                                                                                                                                                                                                                                              |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Preamble                | A header containing metadata pertaining to the TIP.                                                                                                                                                                                                                                                      |
+| Preamble                | A header containing metadata pertaining to the TIP.                                                                                                                                                                                                                                                       |
 | Abstract                | A short (~200 word) description of the technical issue being discussed.                                                                                                                                                                                                                                  |
 | Motivation              | A clear explanation of why the TIP is needed and what problem it is attempting to address.                                                                                                                                                                                                               |
 | Specification           | The technical specification of the new feature or standard. Include detailed steps and implementation specifics, as well as any standards or other specifications the TIP must adhere to. This should be detailed enough to allow for alternative implementations to be created from this specification. |
 | Backwards Compatibility | Specify all breaking changes to any API or existing standard. Any backwards incompatibilities must describe their severity, and any backwards compatibility considerations should be clearly communicated here.                                                                                          |
 | Copyright               | A license must be included with the TIP specifying its inclusion into the public domain or protections of code. |
 
+
+### Preamble
+
+Each TIP must include a [RFC 822](https://www.ietf.org/rfc/rfc822.txt) style header at the top of the document. The headers are required except for the optional fields marked with a "*" in the following order:
+
+| Field           | Description                                   |
+| --------------- | --------------------------------------------- |
+| TIP             | TIP number or "?" before a number is assigned |
+| Title           | A 44 character max descriptive title          |
+| Author          | List of authors' names and email addresses    |
+| Status          | Current status of TIP                         |
+| Type            | One of the allowed TIP types                  |
+| Created         | Date created, in ISO 8601 (yyyy-mm-dd) format |
+| License         | License code                                  |
+| * Requires      | TIP number(s) this TIP depends on             |
+| * Replaces      | TIP number(s) this TIP supersedes             |
+| * Superseded-By | TIP number(s) that make this TIP obsolete |
 
 ### TIP Types
 
