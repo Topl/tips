@@ -22,3 +22,21 @@ TIP refers to Topl Improvement Proposals, a formal design process for producing 
 | Specification           |             |
 | Backwards Compatibility |             |
 | Copyright               |             |
+
+
+### TIP Status
+
+| Status   | Description                                                             |
+| -------- | ----------------------------------------------------------------------- |
+| Draft    | The document has been formally accepted to the repository and actrively |
+| Proposed |                                                                         |
+| Active   |                                                                         |
+| Obsolete |                                                                         |
+| Rejected |                                                                         |
+
+## Copyright
+
+This work is licensed under a
+[Creative Commons Attribution 4.0 International License][cc-by].
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
