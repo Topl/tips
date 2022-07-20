@@ -2,7 +2,7 @@
 TIP: 1
 Title: TIP Purpose, Specification, and Process
 Author: Nicholas Edmonds <n.edmonds@topl.me>
-Status: Proposed
+Status: Draft
 Type: Process
 Created: 2022-07-20
 License: CC-BY-4.0
@@ -15,6 +15,8 @@ TIP refers to Topl Improvement Proposals, a formal design process for producing 
 
 ### TIP Components and format
 
+Each TIP must include the following sections and be filled out properly to be considered.
+
 | Section                 | Description                                                                                                                                                                                                                                                                                              |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Preamble                | A header containing metadata pertaining to the TIP.                                                                                                                                                                                                                                                      |
@@ -23,6 +25,18 @@ TIP refers to Topl Improvement Proposals, a formal design process for producing 
 | Specification           | The technical specification of the new feature or standard. Include detailed steps and implementation specifics, as well as any standards or other specifications the TIP must adhere to. This should be detailed enough to allow for alternative implementations to be created from this specification. |
 | Backwards Compatibility | Specify all breaking changes to any API or existing standard. Any backwards incompatibilities must describe their severity, and any backwards compatibility considerations should be clearly communicated here.                                                                                          |
 | Copyright               | A license must be included with the TIP specifying its inclusion into the public domain or protections of code. |
+
+
+### TIP Types
+
+TIPs consist of three different types, depending on the method of implementation or documentation:
+
+1. **Standard**:
+  Describes any change that will affect Topl Ecosystem implementations. This can be changes to the network protocol, changes block or transaction validity rules, or changes to the interoperability of applications that build upon the Topl Ecosystem.
+
+2. **Informational**: Describes a design or guideline to improve or add information relevant to the Topl Ecosystem. These do not necessarily require consensus or changes to the protocol, but serve to improve upon a common understanding of some aspect of the ecosystem.
+
+3. **Process**: Describes a change to or a new process used by the Topl Ecosystem. This may be an implementation, but not to the core protocol. Typically these will require consensus agreement, and cannot be freely ignored. This includes changes to the TIP process, ecosystem tooling, and Topl environments.
 
 
 ### TIP Status
