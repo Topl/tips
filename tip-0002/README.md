@@ -18,12 +18,26 @@ Based on the specific asymmetric key cryptography and architectural decisions ma
 
 ## Specification
 
+### Steps
+1. Entropy is a fixed-length byte array derived from a [BIP-0039] compliant mnemonic
 
+2. The user provides an arbitrary-length passphrase, encoded as a UTF-8 string
+
+3. The entropy and passphrase are passed as inputs to a key derivation function to produce a seed. The KDF used is PBKDF2-HMAC-SHA512 specified in [RFC 4231] with the number of iterations being 4096 and the derived key length being 96.
+``
 
 ## Compatibility
 
 ## References
 
+[BIP-0039]: Mnemonic code for generating deterministic keys
+
+[BIP-0039]: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
+
+
+[RFC 4231]: Test vectors for HMAC-512 key derivation function
+
+[RFC 4231]: https://datatracker.ietf.org/doc/html/rfc4231
 
 ## Copyright
 
@@ -31,3 +45,4 @@ This work is licensed under a
 [Creative Commons Attribution 4.0 International License][cc-by].
 
 [cc-by]: https://creativecommons.org/licenses/by/4.0/
+
