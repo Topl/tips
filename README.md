@@ -7,4 +7,10 @@ The standard format for submitting a TIP should follow TIP-0001.
 
 | Number   | Title            | Status |
 |----------|------------------|--------|
-| [TIP-0001](https://github.com/Topl/tips/tree/tip-0001/TIP-0001) | TIP Process      | Active |
+| [TIP-0001](https://github.com/Topl/tips/tree/tip-0001/TIP-0001) | TIP Process      | Active  |
+
+
+This work is licensed under a
+[Creative Commons Attribution 4.0 International License][cc-by].
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
