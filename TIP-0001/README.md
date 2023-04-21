@@ -2,7 +2,7 @@
 TIP: 1
 Title: TIP Purpose, Specification, and Process
 Author: Nicholas Edmonds <n.edmonds@topl.me>
-Status: Draft
+Status: Active
 Type: Process
 Created: 2022-07-20
 License: CC-BY-4.0
