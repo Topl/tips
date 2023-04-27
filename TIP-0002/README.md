@@ -71,7 +71,7 @@ The following are valid addresses for the different networks.
 Assuming the payload is a sequence of 32 bytes where all bytes are 0 (`payload = 0x0000000000000000000000000000000000000000000000000000000000000000`), the following are valid encoded addresses for Main, Valhalla and Private network respectively.
 
 - `mtetmain1y1Rqvj9PiHrsoF4VRHKscLPArgdWe44ogoiKoxwfevERNVgxLLh`
-- `vtetDGydU3EhwSbcRVFiuHmyP37Y57BwpmmutR7ZPYdD8BYssHEj3FRhr2Y`
+- `vtetDGydU3EhwSbcRVFiuHmyP37Y57BwpmmutR7ZPYdD8BYssHEj3FRhr2Y8`
 - `ptetP7jshHTuV9bmPmtVLm6PtUzBMZ8iYRvAxvbGTJ5VgiEPHqCCnZ8MLLdi`
 
 #### Example 2
