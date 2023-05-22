@@ -2,7 +2,7 @@
 TIP: 2
 Title: Topl Address Encoding
 Author: Edmundo López Bóbeda <e.lopez@topl.me>
-Status: Draft
+Status: Accepted
 Type: Standard
 Created: 2023-04-26
 License: CC-BY-4.0
