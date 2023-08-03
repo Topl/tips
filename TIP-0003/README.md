@@ -10,8 +10,6 @@ License: CC-BY-4.0
 
 [TOC]
 
-
-
 ## Abstract
 
 This TIP proposes a specification for the asset management in the TOPL Blockchain.
@@ -67,15 +65,19 @@ The diagram assumes the existence of the following value types, which are used t
 
 #### Asset Token
 
-Represents the instance of an asset that is stored in a UTXO. We call the pair (groupId, seriesId) the asset identifier.
+Represents the instance of an asset that is stored in a UTXO. We call the pair (groupId, seriesId) the asset identifier. An asset token might have a group alloy or a series alloy, but not both.
 
 ##### Attributes
 
-| Attribute Name | Type   | Description                                                  |
-| -------------- | ------ | ------------------------------------------------------------ |
-| groupId        | Hash32 | The group identifier of the group token that was used to mint this asset. |
-| seriesId       | Hash32 | The series identifier of the series token that was used to mint this asset. |
-| quantity       | Int128 | The quantity of the asset that is stored in a given UTXO.    |
+| Attribute Name     | Type                   | Description                                                  |
+| ------------------ | ---------------------- | ------------------------------------------------------------ |
+| groupId            | Hash32                 | The group identifier of the group token that was used to mint this asset. When there is a groupAlloy this field is not used. |
+| seriesId           | Hash32                 | The series identifier of the series token that was used to mint this asset. When there is a seriesAlloy this field is not used. |
+| quantity           | Int128                 | The quantity of the asset that is stored in a given UTXO.    |
+| groupAlloy         | Hash32                 | This field is optional and represents a Merkle root of the alloy of groups in this asset. This is only valid for tokens that are series fungible. |
+| seriesAlloy        | Hash32                 | This field is optional and represents a Merkle root of the alloy of series in this asset. This is only valid for tokens that are group fungible. |
+| fungibility        | FungibilityType        | Describes the fungibility of the asset.                      |
+| quantityDescriptor | QuantityDescriptorType | Describes the quantity behavior of this asset.               |
 
 #### Group Constructor Token
 
@@ -170,12 +172,35 @@ The minting of a series constructor token requires to burn a certain amount of L
 The minting of an asset requires to use one group and one series constructor token. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
 - *Check Moving Assets:* Let (`GI1` ,`SI1`) be a token identifier, then the number of tokens with identifier (`GI1` ,`SI1`) in the input is equal to the number of the number of tokens with identifier (`GI1` ,`SI1`) in the output.
+
 - *Check Minting of Asset Tokens:* Let $AMS_0$ ... $AMS_{n-1}$ be the $n$ Asset Minting Statement to mint $m_0$, $m_1$, ..., $m_{n-1}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
+
   - All Asset Minting Statement $AMS_0$ ... $AMS_{n-1}$  are attached to the transaction.
+
   - Let $in$ be the number of assets with identifier (`GI1` ,`SI1`) in the input and $out$  number of assets with identifier (`GI1` ,`SI1`) in the output, then: 
     $$in + \sum_{i = 1}^{n - 1} m_i = out$$
+
   - For each $AMS_i$, all UTXOs referenced are unique.
+
   - For each $AMS_i$, the token supply specified in the referenced series is equal to the quantity attribute in $AMS_i$.
+
+  - Let $gin$ be the total number of group constructor tokens with identifier `GI1` in the input, $gout$ the total number of group constructor tokens with identifier `G1` in the output, and $burned$ the number of $AMS_i$ where the referenced series specifies a token supply then we have:
+
+    $$gin - burned = gout$$
+
+  - Let $sin$ be the total number of series constructor tokens with identifier `SI1` in the input, $sout$ the total number of series constructor tokens with identifier `S1` in the output, and $burned$ the number of $AMS_i$ where the referenced series specifies a token supply, then we have:
+
+    $$sin - burned = sout$$
+
+### Transacting with Assets
+
+Transaction with assets are performed in the same way as transactions with LVLs. The only difference is that assets allow for different degrees of fungibility. At a chain level two assets are fungible if they can both be stored in the same UTXO. This poses a problem when we deal with two assets that are fungible at one level but not at the other. 
+
+#### Merging and Splitting Assets
+
+Merging assets mean that we take to assets that are fungible at one level but not the other and merge them into the same UTXO. The reverse operation is the splitting of assets.
+
+Quantity Behavior
 
 ### Glossary
 
