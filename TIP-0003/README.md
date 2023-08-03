@@ -170,9 +170,9 @@ The minting of a series constructor token requires to burn a certain amount of L
 The minting of an asset requires to use one group and one series constructor token. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
 - *Check Moving Assets:* Let (`GI1` ,`SI1`) be a token identifier, then the number of tokens with identifier (`GI1` ,`SI1`) in the input is equal to the number of the number of tokens with identifier (`GI1` ,`SI1`) in the output.
-- *Check Minting of Asset Tokens:* Let $AMS_0$ ... $AMS_{n - 1}$ be the $n$ Asset Minting Statement to mint $m_0$, $m_1$, ..., $m_{n-1}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
-  - All Asset Minting Statement $AMS_0$ ... $AMS_{n - 1}$  are attached to the transaction.
-  - The number of assets with identifier (`GI1` ,`SI1`) in the input plus $\sum^{n - 1}_{i = 0} m_i$ is equal to the sum of all outputs of assets with identifier (`GI1` ,`SI1`)
+- *Check Minting of Asset Tokens:* Let $AMS_1$ ... $AMS_{n}$ be the $n$ Asset Minting Statement to mint $m_1$, $m_2$, ..., $m_{n}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
+  - All Asset Minting Statement $AMS_1$ ... $AMS_{n}$  are attached to the transaction.
+  - The number of assets with identifier (`GI1` ,`SI1`) in the input plus $\sum_{i = 1}^n m_i$ is equal to the sum of all outputs of assets with identifier (`GI1` ,`SI1`)
   - For each $AMS_i$, all UTXOs referenced are unique.
   - For each $AMS_i$, the token supply specified in the referenced series is equal to the quantity attribute in $AMS_i$.
 
