@@ -170,8 +170,8 @@ The minting of a series constructor token requires to burn a certain amount of L
 The minting of an asset requires to use one group and one series constructor token. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
 - *Check Moving Assets:* Let (`GI1` ,`SI1`) be a token identifier, then the number of tokens with identifier (`GI1` ,`SI1`) in the input is equal to the number of the number of tokens with identifier (`GI1` ,`SI1`) in the output.
-- *Check Minting of Asset Tokens:* Let $AMS_1$ ... $AMS_{n}$ be the $n$ Asset Minting Statement to mint $m_1$, $m_2$, ..., $m_{n}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
-  - All Asset Minting Statement $AMS_1$ ... $AMS_{n}$  are attached to the transaction.
+- *Check Minting of Asset Tokens:* Let $AMS_0$ ... $AMS_{n-1}$ be the $n$ Asset Minting Statement to mint $m_0$, $m_1$, ..., $m_{n-1}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
+  - All Asset Minting Statement $AMS_0$ ... $AMS_{n-1}$  are attached to the transaction.
   - Let $in$ be the number of assets with identifier (`GI1` ,`SI1`) in the input and $out$  number of assets with identifier (`GI1` ,`SI1`) in the output, then: 
     $$in + \sum_{i = 1}^{n - 1} m_i = out$$
   - For each $AMS_i$, all UTXOs referenced are unique.
