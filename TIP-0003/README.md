@@ -173,7 +173,7 @@ The minting of an asset requires to use one group and one series constructor tok
 - *Check Minting of Asset Tokens:* Let $AMS_1$ ... $AMS_{n}$ be the $n$ Asset Minting Statement to mint $m_1$, $m_2$, ..., $m_{n}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
   - All Asset Minting Statement $AMS_1$ ... $AMS_{n}$  are attached to the transaction.
   - Let $in$ be the number of assets with identifier (`GI1` ,`SI1`) in the input and $out$  number of assets with identifier (`GI1` ,`SI1`) in the output, then: 
-    $$in + \sum_{i = 1}^n m_i = out$$
+    $$in + \sum_{i = 1}^{n - 1} m_i = out$$
   - For each $AMS_i$, all UTXOs referenced are unique.
   - For each $AMS_i$, the token supply specified in the referenced series is equal to the quantity attribute in $AMS_i$.
 
