@@ -8,7 +8,6 @@ Created: 2023-08-02
 License: CC-BY-4.0
 </pre>
 
-[TOC]
 
 ## Abstract
 
@@ -46,6 +45,10 @@ The diagram assumes the existence of the following value types, which are used t
 
 - **Hash32.-** A 32 bytes long message digest.
 
+- **JSON.-** A JSON object.
+
+- **JSONSchema.-** A JSON schema following the [JSON Schema Specification](https://json-schema.org/specification.html).  
+
 - **FungibilityType.-** It has 3 values:
 
   - `group-and-series`
@@ -80,6 +83,8 @@ Represents the instance of an asset that is stored in a UTXO. We call the pair (
 | seriesAlloy        | Hash32                 | This field is optional and represents a Merkle root of the alloy of series in this asset. This is only valid for tokens that are group fungible. |
 | fungibility        | FungibilityType        | Describes the fungibility of the asset.                      |
 | quantityDescriptor | QuantityDescriptorType | Describes the quantity behavior of this asset.               |
+| metadata           | JSON [ 0 .. 1 ]        | This is the ephemeral metadata of an asset. It follows the schema defined in the ephemeral metadata schema of the series policy corresponding to the token being minted. The conformance of this field to the schema is not checked by the node. |
+| commitment         | Hash32                 |                                                              |
 
 #### Group Constructor Token
 
@@ -98,10 +103,13 @@ The series constructor token is a special type of token whose sole purpose is to
 
 ##### Attributes
 
-| Attribute Name | Type   | Description                                                  |
-| -------------- | ------ | ------------------------------------------------------------ |
-| seriesId       | Hash32 | The series identifier of this series constructor token. It is the digest of the Series Policy. |
-| quantity       | Int128 | The quantity of series constructor tokens stored in a given UTXO. |
+| Attribute Name     | Type                   | Description                                                  |
+| ------------------ | ---------------------- | ------------------------------------------------------------ |
+| seriesId           | Hash32                 | The series identifier of this series constructor token. It is the digest of the Series Policy. |
+| quantity           | Int128                 | The quantity of series constructor tokens stored in a given UTXO. |
+| tokenSupply        | Int [ 0 .. 1 ]         | This is an optional field. When provided it fixes the quantity of tokens that can be minted when this series is consumed, and the series constructor is burned by the minting transaction. When not provided, the series constructor is not burned, thus making the token supply unlimited. |
+| fungibility        | FungibilityType        | Describes the fungibility of the assets minted using the series constructor token derived from this policy. |
+| quantityDescriptor | QuantityDescriptorType | Describes the behavior of the quantity field of the assets minted using the series constructor derived from this policy. |
 
 #### Group Policy
 
@@ -109,11 +117,11 @@ The group policy describes a group of tokens and the behavior of a Group Constru
 
 ##### Attributes
 
-| Attribute Name   | Type        | Description                                                  |
-| ---------------- | ----------- | ------------------------------------------------------------ |
-| label            | String      | The human readable name of this group.                       |
-| registrationUtxo | UtxoAddress | The address of a UTXO. The UTXO contains the LVLs that are paid for minting the group constructor token. |
-| fixedSeries      | Hash32      | This is an optional field. When provided, it means that this group can only be used to mint an asset with the series that has the same identifier as this field. |
+| Attribute Name   | Type             | Description                                                  |
+| ---------------- | ---------------- | ------------------------------------------------------------ |
+| label            | String           | The human readable name of this group.                       |
+| registrationUtxo | UtxoAddress      | The address of a UTXO. The UTXO contains the LVLs that are paid for minting the group constructor token. |
+| fixedSeries      | Hash32 [ 0 .. 1] | This is an optional field. When provided, it means that this group can only be used to mint an asset with the series that has the same identifier as this field. |
 
 #### Series Policy
 
@@ -121,13 +129,15 @@ The series policy describes a series of tokens and the behavior of a Series Cons
 
 ##### Attributes
 
-| Attribute Name     | Type                   | Description                                                  |
-| ------------------ | ---------------------- | ------------------------------------------------------------ |
-| label              | String                 | The human readable name of this series.                      |
-| registrationUtxo   | UtxoAddress            | The address of a UTXO. The UTXO contains the LVLs that are paid for minting the group constructor token. |
-| tokenSupply        | Int                    | This is an optional field. When provided it fixes the quantity of tokens that can be minted when this series is consumed, and both the group constructor and the series constructor are burned by the minting transaction. When not provided, neither group nor the series constructor are burned, thus making the token supply unlimited. |
-| fungibility        | FungibilityType        | Describes the fungibility of the assets minted using the series constructor token derived from this policy. |
-| quantityDescriptor | QuantityDescriptorType | Describes the behavior of the quantity field of the assets minted using the series constructor derived from this policy. |
+| Attribute Name          | Type                   | Description                                                  |
+| ----------------------- | ---------------------- | ------------------------------------------------------------ |
+| label                   | String                 | The human readable name of this series.                      |
+| registrationUtxo        | UtxoAddress            | The address of a UTXO. The UTXO contains the LVLs that are paid for minting the group constructor token. |
+| tokenSupply             | Int [ 0 .. 1 ]         | This is an optional field. When provided it fixes the quantity of tokens that can be minted when this series is consumed, and the series constructor is burned by the minting transaction. When not provided, the series constructor is not burned, thus making the token supply unlimited. |
+| fungibility             | FungibilityType        | Describes the fungibility of the assets minted using the series constructor token derived from this policy. |
+| quantityDescriptor      | QuantityDescriptorType | Describes the behavior of the quantity field of the assets minted using the series constructor derived from this policy. |
+| ephemeralMetadataScheme | JSONSchema [ 0 .. 1 ]  | Describes the schema of the data stored in the metadata field of the Asset Minting Statement. |
+| permanentMetadataScheme | JSONSchema [ 0 .. 1 ]  | Describes the schema of the data stored in the Asset Token.  |
 
 #### Asset Minting Statement
 
@@ -135,11 +145,12 @@ The asset minting statement provides the information needed at the moment of min
 
 ##### Attributes
 
-| Attribute Name  | Type        | Description                                                  |
-| --------------- | ----------- | ------------------------------------------------------------ |
-| groupTokenUtxo  | UtxoAddress | The address of the UTXO that contains the group constructor token that we are using to mint the asset token. |
-| seriesTokenUtxo | UtxoAddress | The address of the UTXO that contains the seriesconstructor token that we are using to mint the asset token. |
-| quantity        | Int128      | The number of assets that we are minting using the group and series constructor token references by the two other attributes. |
+| Attribute Name  | Type            | Description                                                  |
+| --------------- | --------------- | ------------------------------------------------------------ |
+| groupTokenUtxo  | UtxoAddress     | The address of the UTXO that contains the group constructor token that we are using to mint the asset token. |
+| seriesTokenUtxo | UtxoAddress     | The address of the UTXO that contains the seriesconstructor token that we are using to mint the asset token. |
+| quantity        | Int128          | The number of assets that we are minting using the group and series constructor token references by the two other attributes. |
+| metadata        | JSON [ 0 .. 1 ] | This is the permanent metadata of an asset. It follows the schema defined in the permanent metadata schema of the series policy corresponding to the token being minted. The conformance of this field to the schema is not checked by the node. |
 
 #### Asset Merging Statement
 
@@ -175,42 +186,40 @@ The minting of an asset requires the previous existence of one Group and one Ser
 
 The minting of a group constructor token requires to burn a certain amount of LVLs and to provide the policy that describes the group. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction:
 
-- *Check Moving Constructor Tokens:* Let `GI1` be a group identifier, then the number of Group Constructor Tokens with group identifier `GI1` in the input is equal to the number of the number of Group Constructor Tokens with identifier `GI1` in the output.
-- *Check Minting Constructor Tokens:* Let `GI1` be a group identifier and `GP1` the policy whose digest is equal to `GI1`, all of the following statements are true:
-  - The policy `GP1` is attached to the transaction.
-  - The number of group constructor tokens with identifier `GI1` in the output of the transaction is strictly bigger than 0.
-  - The registration UTXO referenced in `GP1` is present in the inputs and contains LVLs.
+- *Check Moving Constructor Tokens:* Let $g$ be a group identifier, then the number of Group Constructor Tokens with group identifier $g$ in the input is equal to the number of the number of Group Constructor Tokens with identifier $g$ in the output.
+- *Check Minting Constructor Tokens:* Let $g$ be a group identifier and $p$ the group policy whose digest is equal to $g$, a transaction is valid only if the all of the following statements are true:
+  - The policy $p$ is attached to the transaction.
+  - The number of group constructor tokens with identifier $g$ in the output of the transaction is strictly bigger than 0.
+  - The registration UTXO referenced in $p$ is present in the inputs and contains LVLs.
 
 #### Minting of Series Constructor Tokens
 
 The minting of a series constructor token requires to burn a certain amount of LVLs and to provide te policy that describes the series. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction:
 
-- *Check Moving Series Tokens:* Let `SI1` be a series identifier, then the number of Series Constructor Tokens with group identifier `SI1` in the input is equal to the number of the number of Series Constructor Tokens with identifier `SI1` in the output.
-- *Check Minting Constructor Tokens:* Let `SI1` be a series identifier and `SP1` the policy whose digest is equal to `SI1`, all of the following statements are true:
-  - The policy `SP1` is attached to the transaction.
-  - The number of series constructor tokens with identifier `SI1` in the output of the transaction is strictly bigger than 0.
-  - The registration UTXO referenced in `SP1` is present in the inputs and contains LVLs.
+- *Check Moving Series Tokens:* Let $s$ be a series identifier, then the number of Series Constructor Tokens with group identifier $s$ in the input is equal to the number of the number of Series Constructor Tokens with identifier $s$ in the output.
+- *Check Minting Constructor Tokens:* Let $s$ be a series identifier and $p$ the series policy whose digest is equal to $s$, all of the following statements are true:
+  - The policy $p$ is attached to the transaction.
+  - The number of series constructor tokens with identifier $s$ in the output of the transaction is strictly bigger than 0.
+  - The registration UTXO referenced in $p$ is present in the inputs and contains LVLs.
 
 #### Minting of an Asset Token
 
 The minting of an asset requires to use one group and one series constructor token. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
-- *Check Minting of Asset Tokens:* Let $AMS_0$ ... $AMS_{n-1}$ be the $n$ Asset Minting Statement to mint $m_0$, $m_1$, ..., $m_{n-1}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
+- *Check Minting of Asset Tokens:* Let $A_0$ ... $A_{n-1}$ be the $n$ Asset Minting Statements to mint $m_0$, $m_1$, ..., $m_{n-1}$  tokens with identifier  ($g$, $s$) , all of the following statements are true:
 
-  - All Asset Minting Statement $AMS_0$ ... $AMS_{n-1}$  are attached to the transaction.
+  - All Asset Minting Statements $A_0$ ... $A_{n-1}$  are attached to the transaction.
 
-  - Let $in$ be the number of assets with identifier (`GI1` ,`SI1`) in the input and $out$  number of assets with identifier (`GI1` ,`SI1`) in the output, then: 
-    $$in + \sum_{i = 1}^{n - 1} m_i = out$$
+  - Let $in$ be the number of assets with identifier ($g$ ,$s$) in the input and $out$  number of assets with identifier ($g$ ,$s$) in the output, then: 
+    $$
+    in + \sum_{i = 1}^{n - 1} m_i = out
+    $$
 
-  - For each $AMS_i$, all UTXOs referenced are unique.
+  - For all $A_i$, all UTXOs referenced are unique.
 
-  - For each $AMS_i$, the token supply specified in the referenced series is equal to the quantity attribute in $AMS_i$.
+  - For all $A_i$, the token supply specified in the referenced series is equal to the quantity attribute in $A_i$.
 
-  - Let $gin$ be the total number of group constructor tokens with identifier `GI1` in the input, $gout$ the total number of group constructor tokens with identifier `G1` in the output, and $burned$ the number of $AMS_i$ where the referenced series specifies a token supply then we have:
-
-    $$gin - burned = gout$$
-
-  - Let $sin$ be the total number of series constructor tokens with identifier `SI1` in the input, $sout$ the total number of series constructor tokens with identifier `S1` in the output, and $burned$ the number of $AMS_i$ where the referenced series specifies a token supply, then we have:
+  - Let $sin$ be the total number of series constructor tokens with identifier $s$ in the input, $sout$ the total number of series constructor tokens with identifier $s$ in the output, and $burned$ the number of $A_i$ where the referenced series specifies a token supply, then we have:
 
     $$sin - burned = sout$$
 
@@ -222,27 +231,25 @@ Transaction with assets are performed in the same way as transactions with LVLs.
 
 Moving assets does not require to attach any extra metadata to the transaction. However, the following validations need to be performed:
 
-- *Check Assets Fungibility:* Let `GI1` be a group identifier and ,`S1`, ..., `SN`  be series identifiers,  all of the following statements must be true:
-
-  - if `SI1` is group and series fungible, then the number of tokens with identifier (`GI1` ,`SI1`) in the input is equal to the number of tokens with identifier (`GI1` ,`SI1`) in the output.
-
-  - if `S1` is a series fungible series, then the sum of all tokens with identifier (`*`, `S1`) in the input is equal to the number of tokens with identifier (`*`, `S1`) in the output.
-
-  - if the series `S1`, ..., `SN` are group fungible series, then the sum of all tokens with identifiers (`G1`,`S1|S2|...|SN`) in the input is equal to the number of tokens with identifier (`G1`,`S1|S2|...|SN`).
-
-- *Check Assets Quantity Descriptors*: Quantity descriptors regulate how UTXOs of an asset are split or merged. This is different from alloys, as the assets being merged or split always share the same group and series identifier. Let (`G1`, `S1`) be an asset identifier, all the following statements must be true:
-
-  - If  (`G1`, `S1`)'s quantity descriptor is `immutable`, then, for each input UTXO containing  (`G1`, `S1`) with quantity `n` , there must be exactly one output containing  (`G1`, `S1`) with quantity `n`.
-  - If  (`G1`, `S1`)'s quantity descriptor is `accumulator`, then, for each input UTXO containing  (`G1`, `S1`) with quantity `n` , it exists one output containing  (`G1`, `S1`) with quantity  `m` $\geq$ `n` .
-  - If  (`G1`, `S1`)'s quantity descriptor is `fractionable`, then, for each input UTXO containing  (`G1`, `S1`) with quantity `n` ,  one or more outputs containing  (`G1`, `S1`) whose sum is equal to `n`.
+- *Check Assets Fungibility:* Let $g$ be a group identifier and $s$, $s_0$, ..., $s_{n - 1}$  be series identifiers,  all of the following statements must be true:
+  - if $s$ is group and series fungible, then the number of tokens with identifier ($g$ ,$s$) in the input is equal to the number of tokens with identifier ($g$ ,$s$) in the output.
+  
+  - if $s$ is a series fungible series, and $G$ the set of group identifiers, then the sum of all tokens with identifiers ($g$, $s$), where $g \in G$, in the input is equal to the number of tokens with identifiers ($g$, $s$), where $g \in G$.
+  
+  - if $g$ is a group identifier and $S$ is the set of group fungible series, then the sum of all tokens with identifiers ($g$, $s$), where $s\in S$, in the input is equal to the number of tokens with identifier ($g$, $s$), where $s\in S$.
+  
+- *Check Assets Quantity Descriptors*: Quantity descriptors regulate how UTXOs of an asset are split or merged. This is different from alloys, as the assets being merged or split always share the same group and series identifier. Let ($g$, $s$) be an asset identifier, all the following statements must be true:
+  - If  ($g$, $s$)'s quantity descriptor is `immutable`, then, for each input UTXO containing  ($g$, $s$) with quantity $n$ , there must be exactly one output containing  ($g$, $s$) with quantity $n$.
+  - If  ($g$, $s$)'s quantity descriptor is `accumulator`, then, for each input UTXO containing  ($g$, $s$) with quantity $n$ , it exists one output containing  ($g$, $s$) with quantity  $m \geq n$ .
+  - If  ($g$, $s$)'s quantity descriptor is `fractionable`, then, for each input UTXO containing  ($g$, $s$) with quantity $n$ ,  one or more outputs containing  ($g$, $s$) whose sum is equal to $n$.
 
 #### Merging Assets
 
 Merging assets mean that we take to assets that are fungible at one level but not the other and merge them into the same UTXO.  This requires the submission of a merging transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
-- *Check merging assets:* Let $AMS be a Asset Merging Statement to merge UTXOs $u_0$, $u_1$, ..., $u_{n-1}$ into index $i$. All the following statements are true:
+- *Check merging assets:* Let $A$ be a Asset Merging Statement to merge UTXOs $u_0$, $u_1$, ..., $u_{n-1}$ into index $i$. All the following statements are true:
   - *All UTXOs share the same fungibility type:* There is a fungibility type $ft$, s.t. for all $u_i$, the fungibility type of $u_i$ is $ft$.
-  - *All UTXOs share the same quantity descriptor: *  There is a quantity descriptor $qd$, s.t. for all $u_i$, the quantity descriptor of $u_i$ is $qd$.
+  - *All UTXOs share the same quantity descriptor:*  There is a quantity descriptor $qd$, s.t. for all $u_i$, the quantity descriptor of $u_i$ is $qd$.
   - The asset created at index $i$ has a seriesAlloy if the assets are group fungible, or a groupAlloy if the assets are series fungible. In addition to the actual groups or series, the Merkle tree also considers the quantity of each series or group in the alloy.
   - The Merkle root in the merged asset corresponds to the values in the input UTXOs.
 
@@ -250,14 +257,16 @@ Merging assets mean that we take to assets that are fungible at one level but no
 
 Splitting assets is the opposite of merging them.  This requires the submission of a splitting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
-- *Check splitting assets:* Let $ASS$ be a Asset Splitting Statement to split UTXO $u$ into indexes $i_0$, .., $i_{n - 1}$ . All the following statements are true:
+- *Check splitting assets:* Let $A$ be a Asset Splitting Statement to split UTXO $u$ into indexes $i_0$, .., $i_{n - 1}$ . All the following statements are true:
   - All TXOs in the output have the same fungibility type as the one in the original UTXO $u$.
   - All TXOs in the output have the same quantity descriptor as the one in the original UTXO $u$.
   - The Merkle root in the split asset corresponds to the values in the output TXOs.
 
+## Backwards Compatibility
 
+The new addresses are not compatible with the Dion network. Indeed, Dion network addresses did not include a ledger identifier.
 
-### Glossary
+## Copyright
 
-- UTXO
+We license this work under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
 
