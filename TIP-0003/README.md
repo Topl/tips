@@ -264,7 +264,7 @@ Splitting assets is the opposite of merging them.  This requires the submission 
 
 ## Backwards Compatibility
 
-The new addresses are not compatible with the Dion network. Indeed, Dion network addresses did not include a ledger identifier.
+The new asset model is not compatible with the Dion network.
 
 ## Copyright
 
