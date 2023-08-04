@@ -76,11 +76,11 @@ Represents the instance of an asset that is stored in a UTXO. We call the pair (
 
 | Attribute Name     | Type                   | Description                                                  |
 | ------------------ | ---------------------- | ------------------------------------------------------------ |
-| groupId            | Hash32                 | The group identifier of the group token that was used to mint this asset. When there is a groupAlloy this field is not used. |
-| seriesId           | Hash32                 | The series identifier of the series token that was used to mint this asset. When there is a seriesAlloy this field is not used. |
+| groupId            | Hash32 [ 0 .. 1 ]      | The group identifier of the group token that was used to mint this asset. When there is a groupAlloy this field is not used. |
+| seriesId           | Hash32 [ 0 .. 1 ]      | The series identifier of the series token that was used to mint this asset. When there is a seriesAlloy this field is not used. |
 | quantity           | Int128                 | The quantity of the asset that is stored in a given UTXO.    |
-| groupAlloy         | Hash32                 | This field is optional and represents a Merkle root of the alloy of groups in this asset. This is only valid for tokens that are series fungible. |
-| seriesAlloy        | Hash32                 | This field is optional and represents a Merkle root of the alloy of series in this asset. This is only valid for tokens that are group fungible. |
+| groupAlloy         | Hash32 [ 0 .. 1 ]      | This field is optional and represents a Merkle root of the alloy of groups in this asset. This is only valid for tokens that are series fungible. |
+| seriesAlloy        | Hash32 [ 0 .. 1 ]      | This field is optional and represents a Merkle root of the alloy of series in this asset. This is only valid for tokens that are group fungible. |
 | fungibility        | FungibilityType        | Describes the fungibility of the asset.                      |
 | quantityDescriptor | QuantityDescriptorType | Describes the quantity behavior of this asset.               |
 | metadata           | JSON [ 0 .. 1 ]        | This is the ephemeral metadata of an asset. It follows the schema defined in the ephemeral metadata schema of the series policy corresponding to the token being minted. The conformance of this field to the schema is not checked by the node. |
