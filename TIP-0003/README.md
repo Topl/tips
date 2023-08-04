@@ -63,6 +63,8 @@ The diagram assumes the existence of the following value types, which are used t
 
   `standard` means that the token has the standard behavior. If it is fungible one can fraction it in smaller tokens or merge two smaller tokens to make a bigger one. `accumulator` means that the token can only be merged with other fungible tokens. Once two tokens are merged they can never be separated and will always share the same UTXO. `fractionable` means that the token can only be split but not merged with other fungible tokens. Once the token was split it can never be put together again. `immutable`  means that a token can neither be accumulated nor split, it always keeps the same quantity.
 
+In brackets after the types we include (when it applies) the cardinalities of the different values. For example, Int [ 0 .. 1 ] represents an optional integer, or Hash32 [ 1 .. * ] a non empty list of Hash32.
+
 #### Asset Token
 
 Represents the instance of an asset that is stored in a UTXO. We call the pair (groupId, seriesId) the asset identifier. An asset token might have a group alloy or a series alloy, but not both.
@@ -129,7 +131,7 @@ The series policy describes a series of tokens and the behavior of a Series Cons
 
 #### Asset Minting Statement
 
-The asset minting provides the information needed at the moment of minting an asset.
+The asset minting statement provides the information needed at the moment of minting an asset.
 
 ##### Attributes
 
@@ -138,6 +140,28 @@ The asset minting provides the information needed at the moment of minting an as
 | groupTokenUtxo  | UtxoAddress | The address of the UTXO that contains the group constructor token that we are using to mint the asset token. |
 | seriesTokenUtxo | UtxoAddress | The address of the UTXO that contains the seriesconstructor token that we are using to mint the asset token. |
 | quantity        | Int128      | The number of assets that we are minting using the group and series constructor token references by the two other attributes. |
+
+#### Asset Merging Statement
+
+The asset merging statement provides the information needed at the moment of merging an asset.
+
+##### Attributes
+
+| Attribute Name | Type                  | Description                                                  |
+| -------------- | --------------------- | ------------------------------------------------------------ |
+| inputUtxos     | UtxoAddress [1 .. * ] | The non-empty list of UTXOs that we are using to compute the Merkle root for the alloy. |
+| outputIdx      | Int                   | The index in the output sequence of the transaction where the merged tokens are stored. |
+
+#### Asset Splitting Statement
+
+The asset splitting statement provides the information needed at the moment of splitting an asset.
+
+##### Attributes
+
+| Attribute Name | Type          | Description                                                  |
+| -------------- | ------------- | ------------------------------------------------------------ |
+| outputIndexes  | Int [1 .. * ] | The non-empty list of indexes where the split asset is being put. |
+| inputUtxo      | UtxoAddress   | The UTXO that is being split.                                |
 
 ### Minting Process
 
@@ -171,8 +195,6 @@ The minting of a series constructor token requires to burn a certain amount of L
 
 The minting of an asset requires to use one group and one series constructor token. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
-- *Check Moving Assets:* Let (`GI1` ,`SI1`) be a token identifier, then the number of tokens with identifier (`GI1` ,`SI1`) in the input is equal to the number of the number of tokens with identifier (`GI1` ,`SI1`) in the output.
-
 - *Check Minting of Asset Tokens:* Let $AMS_0$ ... $AMS_{n-1}$ be the $n$ Asset Minting Statement to mint $m_0$, $m_1$, ..., $m_{n-1}$  tokens with identifier  (`GI1` ,`SI1`) , all of the following statements are true:
 
   - All Asset Minting Statement $AMS_0$ ... $AMS_{n-1}$  are attached to the transaction.
@@ -196,11 +218,44 @@ The minting of an asset requires to use one group and one series constructor tok
 
 Transaction with assets are performed in the same way as transactions with LVLs. The only difference is that assets allow for different degrees of fungibility. At a chain level two assets are fungible if they can both be stored in the same UTXO. This poses a problem when we deal with two assets that are fungible at one level but not at the other. 
 
-#### Merging and Splitting Assets
+#### Moving Assets
 
-Merging assets mean that we take to assets that are fungible at one level but not the other and merge them into the same UTXO. The reverse operation is the splitting of assets.
+Moving assets does not require to attach any extra metadata to the transaction. However, the following validations need to be performed:
 
-Quantity Behavior
+- *Check Assets Fungibility:* Let `GI1` be a group identifier and ,`S1`, ..., `SN`  be series identifiers,  all of the following statements must be true:
+
+  - if `SI1` is group and series fungible, then the number of tokens with identifier (`GI1` ,`SI1`) in the input is equal to the number of tokens with identifier (`GI1` ,`SI1`) in the output.
+
+  - if `S1` is a series fungible series, then the sum of all tokens with identifier (`*`, `S1`) in the input is equal to the number of tokens with identifier (`*`, `S1`) in the output.
+
+  - if the series `S1`, ..., `SN` are group fungible series, then the sum of all tokens with identifiers (`G1`,`S1|S2|...|SN`) in the input is equal to the number of tokens with identifier (`G1`,`S1|S2|...|SN`).
+
+- *Check Assets Quantity Descriptors*: Quantity descriptors regulate how UTXOs of an asset are split or merged. This is different from alloys, as the assets being merged or split always share the same group and series identifier. Let (`G1`, `S1`) be an asset identifier, all the following statements must be true:
+
+  - If  (`G1`, `S1`)'s quantity descriptor is `immutable`, then, for each input UTXO containing  (`G1`, `S1`) with quantity `n` , there must be exactly one output containing  (`G1`, `S1`) with quantity `n`.
+  - If  (`G1`, `S1`)'s quantity descriptor is `accumulator`, then, for each input UTXO containing  (`G1`, `S1`) with quantity `n` , it exists one output containing  (`G1`, `S1`) with quantity  `m` $\geq$ `n` .
+  - If  (`G1`, `S1`)'s quantity descriptor is `fractionable`, then, for each input UTXO containing  (`G1`, `S1`) with quantity `n` ,  one or more outputs containing  (`G1`, `S1`) whose sum is equal to `n`.
+
+#### Merging Assets
+
+Merging assets mean that we take to assets that are fungible at one level but not the other and merge them into the same UTXO.  This requires the submission of a merging transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
+
+- *Check merging assets:* Let $AMS be a Asset Merging Statement to merge UTXOs $u_0$, $u_1$, ..., $u_{n-1}$ into index $i$. All the following statements are true:
+  - *All UTXOs share the same fungibility type:* There is a fungibility type $ft$, s.t. for all $u_i$, the fungibility type of $u_i$ is $ft$.
+  - *All UTXOs share the same quantity descriptor: *  There is a quantity descriptor $qd$, s.t. for all $u_i$, the quantity descriptor of $u_i$ is $qd$.
+  - The asset created at index $i$ has a seriesAlloy if the assets are group fungible, or a groupAlloy if the assets are series fungible. In addition to the actual groups or series, the Merkle tree also considers the quantity of each series or group in the alloy.
+  - The Merkle root in the merged asset corresponds to the values in the input UTXOs.
+
+#### Splitting Assets
+
+Splitting assets is the opposite of merging them.  This requires the submission of a splitting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
+
+- *Check splitting assets:* Let $ASS$ be a Asset Splitting Statement to split UTXO $u$ into indexes $i_0$, .., $i_{n - 1}$ . All the following statements are true:
+  - All TXOs in the output have the same fungibility type as the one in the original UTXO $u$.
+  - All TXOs in the output have the same quantity descriptor as the one in the original UTXO $u$.
+  - The Merkle root in the split asset corresponds to the values in the output TXOs.
+
+
 
 ### Glossary
 
