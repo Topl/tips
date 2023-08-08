@@ -25,7 +25,8 @@ The purpose of the Topl Asset Management Specification is to describe custom tok
 
 - Allow for tokens that mimic ERC-20 tokens.
 - Allow for tokens that mimic ERC-721 NFTs.
-- Go beyond ERC-20 and ERC-721 and provide new primitives
+- Go beyond ERC-20 and ERC-721 and provide new primitives.
+- Keep the chain stateless. In particular, sometimes a little data duplication is allowed to avoid global state.
 
 The Topl blockchain uses an UTXO model and the rest of this document assumes the tokens work on a UTXO based platform.
 
@@ -83,8 +84,8 @@ Represents the instance of an asset that is stored in a UTXO. We call the pair (
 | seriesAlloy        | Hash32 [ 0 .. 1 ]      | This field is optional and represents a Merkle root of the alloy of series in this asset. This is only valid for tokens that are group fungible. |
 | fungibility        | FungibilityType        | Describes the fungibility of the asset.                      |
 | quantityDescriptor | QuantityDescriptorType | Describes the quantity behavior of this asset.               |
-| metadata           | JSON [ 0 .. 1 ]        | This is the ephemeral metadata of an asset. It follows the schema defined in the ephemeral metadata schema of the series policy corresponding to the token being minted. The conformance of this field to the schema is not checked by the node. |
-| commitment         | Hash32                 |                                                              |
+| metadata           | JSON [ 0 .. 1 ]        | This is the ephemeral metadata of an asset. It follows the schema defined in the ephemeral metadata schema of the series policy corresponding to the token being minted. The conformance of this field to the schema is not checked by the node. This field is managed by the user. |
+| commitment         | Hash32                 | This field is meant to store a commitment in the form of a hash. This field is managed by the user. Metadata concerning this field can be added to the metadata. |
 
 #### Group Constructor Token
 
@@ -108,7 +109,7 @@ The series constructor token is a special type of token whose sole purpose is to
 | seriesId           | Hash32                 | The series identifier of this series constructor token. It is the digest of the Series Policy. |
 | quantity           | Int128                 | The quantity of series constructor tokens stored in a given UTXO. |
 | tokenSupply        | Int [ 0 .. 1 ]         | This is an optional field. When provided it fixes the quantity of tokens that can be minted when this series is consumed, and the series constructor is burned by the minting transaction. When not provided, the series constructor is not burned, thus making the token supply unlimited. |
-| fungibility        | FungibilityType        | Describes the fungibility of the assets minted using the series constructor token derived from this policy. |
+| fungibility        | FungibilityType        | Describes the fungibility of the assets minted using this series constructor token. |
 | quantityDescriptor | QuantityDescriptorType | Describes the behavior of the quantity field of the assets minted using the series constructor derived from this policy. |
 
 #### Group Policy
@@ -229,7 +230,7 @@ Transaction with assets are performed in the same way as transactions with LVLs.
 
 #### Moving Assets
 
-Moving assets does not require to attach any extra metadata to the transaction. However, the following validations need to be performed:
+Moving assets does not require to attach any extra metadata to the transaction. Each time an asset is moved, it is the user's responsibility to populate both the metadata and commitment field. It is also responsibility of the user to ensure that the metadata conforms to the data specification in the policy. The node does not enforce this. The following validations are performed by the node:
 
 - *Check Assets Fungibility:* Let $g$ be a group identifier and $s$, $s_0$, ..., $s_{n - 1}$  be series identifiers,  all of the following statements must be true:
   - if $s$ is group and series fungible, then the number of tokens with identifier ($g$ ,$s$) in the input is equal to the number of tokens with identifier ($g$ ,$s$) in the output.
