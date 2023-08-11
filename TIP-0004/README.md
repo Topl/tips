@@ -75,12 +75,12 @@ We define a wallet as:
 - An ordered list of contract templates $t_1$, $t_2$, $\cdots$, $t_n \in T$
 
 - A set of party and contract template indexed maps:
-  ```math
-  \begin{align}
-  V_{p,t}  : & \mathbb{N} & \rightarrow & K \\
-  & l & \mapsto & v & \text{s.t. $v$ is the root verification key that goes at placeholder $l$ in $t$}   
-  \end{align}
-  ``` 
+```math
+\begin{align}
+V_{p,t}  : & \mathbb{N} & \rightarrow & K \\
+& l & \mapsto & v & \text{s.t. $v$ is the root verification key that goes at placeholder $l$ in $t$}   
+\end{align}
+``` 
   
 
 Let $p_i$ be a party, $t_j$ a contract template, $L$ the set of indexes of the verification keys for $t_j$, and $k \in \mathbb{N}$. We first generate the root verification keys $r_l = V_{p_i,t_j}(l)$, where $l \in L$. We then define each $v_l$ to instantiate the contract template as $v_l = r_l / k$, _i.e._ adding one soft derivation to the root verification key . Finally, we define the proposition for a given address as the instantiation of $t_j$ using the $v_l$. The address derived from this proposition is noted $a_{i, j, k}$. 
