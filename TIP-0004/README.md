@@ -7,6 +7,10 @@ Type: Standard
 Created: 2023-08-08
 License: CC-BY-4.0
 </pre>
+[TOC]
+
+
+
 ## Abstract
 
 This TIP proposes a specification for the wallet in the TOPL Blockchain.
@@ -29,6 +33,12 @@ Given those requirements, we need to develop a way to both store the information
 
 ## Specification
 
+This specification is organized as follows. First we present the scope of the specification. Then we formally define what is a wallet. Finally, we present the default implementation of the wallet.
+
+### Scope
+
+We limit this specification to the wallet only. We assume that the user is familiar (or at least) aware of Quivr contracts and how to prove them given the right keys.
+
 ### Formal Definition
 
 #### Preamble and Notation
@@ -43,11 +53,11 @@ Let $n \in N$ be a network. We say that $A_n$ is the set of addresses of the net
 If the wallet can provide the contract used to create $a$ but no signature to unlock the funds from $a$ we say that the wallet _references_ $a$. The set $W_n \subset A_n$, where all addresses $a \in W_n$ are either owned or referenced by the wallet is called _set of wallet addresses_.
 
 The BIP-32 considers the case where funds are spent from one address and then the remaining funds are transferred to a new address, also owned by the wallet. We call this new address the _change address_. We assume that there is a function:
-$$
+```math
 \begin{align}
 c & : & W_n & \rightarrow & W_n
 \end{align}
-$$
+```
 the function $c$ takes an address and returns the change address. 
 
 Let also $m$ be a master extended key, as defined in [BIP-32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki). We use the same notation as BIP-32 to denote the derived keys, _e.g._ $m / i' / j$ denotes the $i$-th hardened derivation of $m$ followed by the $j$-th softened derivation. We denote $K$ the set of master extended keys and all their derivations. A derived key that is used to further derive child keys is called a _root key_.
@@ -65,33 +75,36 @@ We define a wallet as:
 - An ordered list of contract templates $t_1$, $t_2$, $\cdots$, $t_n \in T$
 
 - A set of party and contract template indexed maps:
-  $$
+  ```math
   \begin{align}
-  V_{p_i,t_j}  : & \mathbb{N} & \rightarrow & K \\
-  & 0 & \mapsto & v / i' / j & \text{s.t. $v$ is the verification key of the main key pair $m$} \\
+  V_{p,t}  : & \mathbb{N} & \rightarrow & K \\
   & l & \mapsto & v & \text{s.t. $v$ is the root verification key that goes at placeholder $l$ in $t$}   
   \end{align}
-  $$
+  ``` 
   
 
 Let $p_i$ be a party, $t_j$ a contract template, $L$ the set of indexes of the verification keys for $t_j$, and $k \in \mathbb{N}$. We first generate the root verification keys $r_l = V_{p_i,t_j}(l)$, where $l \in L$. We then define each $v_l$ to instantiate the contract template as $v_l = r_l / k$, _i.e._ adding one soft derivation to the root verification key . Finally, we define the proposition for a given address as the instantiation of $t_j$ using the $v_l$. The address derived from this proposition is noted $a_{i, j, k}$. 
 
 All addresses owned or referenced by a wallet can be indexed using a triplet $\langle i, j, k \rangle$. Using this indexing we can define the change function as follows
-$$
+```math
 \begin{align}
 c_{i,j,k} & : & W_n & \rightarrow & W_n\\
 & : & a_{i,j,k} & \mapsto & a_{i,j,k+1}
 \end{align}
-$$
-
+```
+We say that a wallet owns the funds at an address $a_{i,j,k}$, for one of the placeholders, if the root verification key $V_{p_i,t_j}$ is the root verification key from the derived key $m / i' / j$. Hence, to partially (or completely) prove an owned address $a_{i,j,k}$, we can derive the signing key for the address using the following derivation of the main key $m / i' / j / k$.
 
 [^1]: Definition taken from https://hyperledger-fabric.readthedocs.io/en/release-2.2/network/network.html
 
 ### Implementation Details
 
+We provide a reference implementation of the wallet as part of the service kit. In the service kit we separate the key pair and from the rest of the wallet. We store the main key pair as an encrypted file, and the remaining information in a database. The database stores the parties and contract templates each in their respective table. Finally, we store $V_{p,t}$ in its own table. To simplify the design of the database, we store the list of verification keys as a JSON list.
+
+In this section, we first present the main key derivation. Then we present the database schema that was used to implement the wallet.
+
 #### Topl Main Key Derivation
 
-The Main Key derivation is done by adhering to the BIP-44 structure, along with the modification outlined in CIP-2852. We get the Topl main key by deriving twice the main key `m`:
+The Main Key derivation is done by adhering to the [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) structure, along with the modification outlined in [CIP-2852](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md). We get the Topl main key by deriving twice the main key `m`:
 
 ```
 ToplMainKey = m / purpose' / coin_type'
