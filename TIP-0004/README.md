@@ -104,9 +104,9 @@ In this section, we first present the main key derivation. Then we present the d
 
 #### Topl Main Key Derivation
 
-The Main Key derivation is done by adhering to the [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) structure, along with the modification outlined in [CIP-2852](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md). We get the Topl main key by deriving twice the main key `m`:
+The Main Key derivation is done by adhering to the [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) structure, along with the modification outlined in [CIP-2852](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md). We get the Topl main key by deriving twice the main key $m$:
 
-```
+```math
 ToplMainKey = m / purpose' / coin_type'
 ```
 
