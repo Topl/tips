@@ -7,10 +7,6 @@ Type: Standard
 Created: 2023-08-08
 License: CC-BY-4.0
 </pre>
-[TOC]
-
-
-
 ## Abstract
 
 This TIP proposes a specification for the wallet in the TOPL Blockchain.
@@ -80,8 +76,8 @@ We define a wallet as:
 V_{p,t}  : & \mathbb{N} & \rightarrow & K \\
 & l & \mapsto & v & \text{s.t. $v$ is the root verification key that goes at placeholder $l$ in $t$}   
 \end{align}
-``` 
-  
+```
+
 
 Let $p_i$ be a party, $t_j$ a contract template, $L$ the set of indexes of the verification keys for $t_j$, and $k \in \mathbb{N}$. We first generate the root verification keys $r_l = V_{p_i,t_j}(l)$, where $l \in L$. We then define each $v_l$ to instantiate the contract template as $v_l = r_l / k$, _i.e._ adding one soft derivation to the root verification key . Finally, we define the proposition for a given address as the instantiation of $t_j$ using the $v_l$. The address derived from this proposition is noted $a_{i, j, k}$. 
 
@@ -113,6 +109,8 @@ ToplMainKey = m / purpose' / coinType'
 We use a hardened key when we see an apostrophe. We set the value set for $purpose$ to 1852, as per [CIP-2852](https://cips.cardano.org/cips/cip1852/). The value of $coinType$ is set to 7091, as registered in [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
 
 #### Database Schema
+
+We show the database schema in the following figure.
 
 ![](imgs/erd.png)
 
