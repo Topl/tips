@@ -107,10 +107,10 @@ In this section, we first present the main key derivation. Then we present the d
 The Main Key derivation is done by adhering to the [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) structure, along with the modification outlined in [CIP-2852](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md). We get the Topl main key by deriving twice the main key $m$:
 
 ```math
-ToplMainKey = m / purpose' / coin_type'
+ToplMainKey = m / purpose' / coinType'
 ```
 
-We use a hardened key when we see an apostrophe. We set the value set for `purpose` to 1852, as per [CIP-2852](https://cips.cardano.org/cips/cip1852/). The value of `coin_type` is set to 7091, as registered in [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
+We use a hardened key when we see an apostrophe. We set the value set for $purpose$ to 1852, as per [CIP-2852](https://cips.cardano.org/cips/cip1852/). The value of $coinType$ is set to 7091, as registered in [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
 
 #### Database Schema
 
