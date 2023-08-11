@@ -7,7 +7,6 @@ Type: Standard
 Created: 2023-08-08
 License: CC-BY-4.0
 </pre>
-
 ## Abstract
 
 This TIP proposes a specification for the wallet in the TOPL Blockchain.
@@ -30,7 +29,9 @@ Given those requirements, we need to develop a way to both store the information
 
 ## Specification
 
-#### Terminology
+### Formal Definition
+
+#### Preamble and Notation
 
 A blockchain network is a technical infrastructure that provides ledger and smart contract services to applications [^1]. Let $N$ the set identifiers of blockchain infrastructures providing the Topl blockchain service. Normally, we have the following networks that are part of the set $N$: `private`, `testnet` and `mainnet`. 
 
@@ -44,26 +45,49 @@ If the wallet can provide the contract used to create $a$ but no signature to un
 The BIP-32 considers the case where funds are spent from one address and then the remaining funds are transferred to a new address, also owned by the wallet. We call this new address the _change address_. We assume that there is a function:
 $$
 \begin{align}
-c & : & W_n & \rightarrow & W_n\\
-& : & a_i & \mapsto & a_{i + 1}
+c & : & W_n & \rightarrow & W_n
 \end{align}
 $$
-the function $c$ takes an address $a_i$ and returns $a_{i + 1}$, which must be the change address. 
+the function $c$ takes an address and returns the change address. 
+
+Let also $m$ be a master extended key, as defined in [BIP-32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki). We use the same notation as BIP-32 to denote the derived keys, _e.g._ $m / i' / j$ denotes the $i$-th hardened derivation of $m$ followed by the $j$-th softened derivation. We denote $K$ the set of master extended keys and all their derivations. A derived key that is used to further derive child keys is called a _root key_.
 
 Each Quivr contract has an indexed set of verification keys. The set of verification keys can be empty. A Quivr contract, where each verification key is replaced by a placeholder, is called a _contract template_. We can instantiate it by replacing each placeholder with the corresponding verification key. The owners of the verification keys that appear in a Quivr contract are called _participants_. Each set of participants is called a _party_. 
 
+#### Wallet Definition
+
 We define a wallet as:
 
+- A main key pair $m = \langle v, s \rangle$, where $v$ is a verification key, and $s$ signing key. 
+
 - An ordered list of parties $p_1$, $p_2$, $\cdots$, $p_n \in P$
+
 - An ordered list of contract templates $t_1$, $t_2$, $\cdots$, $t_n \in T$
 
-For a given party $p_i$ and contract template $t_j$, we define the first address as $a_{i,j,1}$. For some $k > 1$, we define recursively:
+- A set of party and contract template indexed maps:
+  $$
+  \begin{align}
+  V_{p_i,t_j}  : & \mathbb{N} & \rightarrow & K \\
+  & 0 & \mapsto & v / i' / j & \text{s.t. $v$ is the verification key of the main key pair $m$} \\
+  & l & \mapsto & v & \text{s.t. $v$ is the root verification key that goes at placeholder $l$ in $t$}   
+  \end{align}
+  $$
+  
+
+Let $p_i$ be a party, $t_j$ a contract template, $L$ the set of indexes of the verification keys for $t_j$, and $k \in \mathbb{N}$. We first generate the root verification keys $r_l = V_{p_i,t_j}(l)$, where $l \in L$. We then define each $v_l$ to instantiate the contract template as $v_l = r_l / k$, _i.e._ adding one soft derivation to the root verification key . Finally, we define the proposition for a given address as the instantiation of $t_j$ using the $v_l$. The address derived from this proposition is noted $a_{i, j, k}$. 
+
+All addresses owned or referenced by a wallet can be indexed using a triplet $\langle i, j, k \rangle$. Using this indexing we can define the change function as follows
 $$
-a_{i,j,k} = c(a_{i,j,k-1})
+\begin{align}
+c_{i,j,k} & : & W_n & \rightarrow & W_n\\
+& : & a_{i,j,k} & \mapsto & a_{i,j,k+1}
+\end{align}
 $$
-From now on, we can refer to all elements of $a_{i,j,k} \in W_n$ by their indexes $\langle i, j, k\rangle$.
+
 
 [^1]: Definition taken from https://hyperledger-fabric.readthedocs.io/en/release-2.2/network/network.html
+
+### Implementation Details
 
 #### Topl Main Key Derivation
 
@@ -124,16 +148,6 @@ The table contains the list of verification keys of parties. It maps a pair of p
 |  x_party   | Integer | The x-index of the cartesian indexing. Represents the index of the party. |
 | y_contract | Text    | The y-index of the cartesian indexing. Represents the index of the contract. |
 |    vks     | Text    | A list of verification keys in JSON format. Each verification key is serialized using protobuf spec and then encoded in Base58. |
-
-#### General Key Derivation
-
-We give the derivation of a key for a particular transaction:
-
-```
-DerivedKey = ToplMainKey / party' / contract / index
-```
-
-The `party` index corresponds to the index stored in the `parties` table. The `contract` index in the `contracts` table, and the `index` to stage of the protocol as
 
 ## Backwards Compatibility
 
