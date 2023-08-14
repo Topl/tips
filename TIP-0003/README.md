@@ -34,7 +34,7 @@ The Topl blockchain uses an UTXO model and the rest of this document assumes the
 
 We show the data model for the asset model in the following diagram. In the diagram, each block represents a domain entity. Inside the blocks are the entities' attributes followed by their types. Finally, the dashed arrows represent that there is a dependency relation between the entities. 
 
-![](imgs/datamodel.png)
+![](imgs/datamodel.svg)
 
 
 
