@@ -137,7 +137,7 @@
       ><text x="4" xml:space="preserve" y="30" clip-path="url(#clipPath5)" stroke="none"
       >seriesId : Hash32</text
       ><text x="4" xml:space="preserve" y="45" clip-path="url(#clipPath5)" stroke="none"
-      >quantiy : Int128</text
+      >quantity : Int128</text
       ><text x="4" xml:space="preserve" y="60" clip-path="url(#clipPath5)" stroke="none"
       >tokenSupply : Int [0..1]</text
       ><text x="4" xml:space="preserve" y="75" clip-path="url(#clipPath5)" stroke="none"
