@@ -211,7 +211,7 @@ The minting of an asset requires to use one group and one series constructor tok
 
   - All Asset Minting Statements $A_0$ ... $A_{n-1}$  are attached to the transaction.
 
-  - Let $in$ be the number of assets with identifier ($g$ ,$s$) in the input and $out$  number of assets with identifier ($g$ ,$s$) in the output, then: 
+  - Let $in$ be the number of assets with identifier ($g$, $s$) in the input and $out$  number of assets with identifier ($g$, $s$) in the output, then: 
 
 $$
 in + \sum_{i = 1}^{n - 1} m_i = out
@@ -236,7 +236,7 @@ Transaction with assets are performed in the same way as transactions with LVLs.
 Moving assets does not require to attach any extra metadata to the transaction. Each time an asset is moved, it is the user's responsibility to populate both the metadata and commitment field. It is also responsibility of the user to ensure that the metadata conforms to the data specification in the policy. The node does not enforce this. The following validations are performed by the node:
 
 - *Check Assets Fungibility:* Let $g$ be a group identifier and $s$, $s_0$, ..., $s_{n - 1}$  be series identifiers,  all of the following statements must be true:
-  - if $s$ is group and series fungible, then the number of tokens with identifier ($g$ ,$s$) in the input is equal to the number of tokens with identifier ($g$ ,$s$) in the output.
+  - if $s$ is group and series fungible, then the number of tokens with identifier ($g$, $s$) in the input is equal to the number of tokens with identifier ($g$, $s$) in the output.
   
   - if $s$ is a series fungible series, and $G$ the set of group identifiers, then the sum of all tokens with identifiers ($g$, $s$), where $g \in G$, in the input is equal to the number of tokens with identifiers ($g$, $s$), where $g \in G$.
   
