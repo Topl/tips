@@ -208,16 +208,15 @@ The minting of a series constructor token requires to burn a certain amount of L
 The minting of an asset requires to use one group and one series constructor token. This requires the submission of a minting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
 - *Check Minting of Asset Tokens:* Let $A_0$ ... $A_{n-1}$ be the $n$ Asset Minting Statements to mint $m_0$, $m_1$, ..., $m_{n-1}$  tokens with identifier  ($g$, $s$) , all of the following statements are true:
-
-  - All Asset Minting Statements $A_0$ ... $A_{n-1}$  are attached to the transaction.
-
-  - Let $in$ be the number of assets with identifier ($g$, $s$) in the input and $out$  number of assets with identifier ($g$, $s$) in the output, then: 
+- All Asset Minting Statements $A_0$ ... $A_{n-1}$  are attached to the transaction.
+  
+- Let $in$ be the number of assets with identifier ($g$, $s$) in the input and $out$  number of assets with identifier ($g$, $s$) in the output, then: 
 
 $$
 in + \sum_{i = 1}^{n - 1} m_i = out
 $$
 
-  - For all $A_i$, all UTXOs referenced are unique.
+  - For all $A_i$, all UTXOs referenced are distinct.
 
   - For all $A_i$, the token supply specified in the referenced series is equal to the quantity attribute in $A_i$.
 
@@ -229,11 +228,11 @@ $$
 
 ### Transacting with Assets
 
-Transaction with assets are performed in the same way as transactions with LVLs. The only difference is that assets allow for different degrees of fungibility. At a chain level two assets are fungible if they can both be stored in the same UTXO. This poses a problem when we deal with two assets that are fungible at one level but not at the other. 
+Transaction with assets are performed in the same way as transactions with LVLs. The only difference is that assets allow for different degrees of fungibility. At a chain level, two assets are fungible if they can both be stored in the same UTXO. This poses a problem when we deal with two assets that are fungible at one level but not at the other. 
 
 #### Moving Assets
 
-Moving assets does not require to attach any extra metadata to the transaction. Each time an asset is moved, it is the user's responsibility to populate both the metadata and commitment field. It is also responsibility of the user to ensure that the metadata conforms to the data specification in the policy. The node does not enforce this. The following validations are performed by the node:
+Moving assets does not require to attach any extra metadata to the transaction. Each time an asset is moved, it is the user's responsibility to populate (if desired) both the metadata and commitment field. _It is also responsibility of the user to ensure that the metadata conforms to the data specification in the policy_. The node does not enforce this. The following validations are performed by the node:
 
 - *Check Assets Fungibility:* Let $g$ be a group identifier and $s$, $s_0$, ..., $s_{n - 1}$  be series identifiers,  all of the following statements must be true:
   - if $s$ is group and series fungible, then the number of tokens with identifier ($g$, $s$) in the input is equal to the number of tokens with identifier ($g$, $s$) in the output.
@@ -244,17 +243,17 @@ Moving assets does not require to attach any extra metadata to the transaction. 
   
 - *Check Assets Quantity Descriptors*: Quantity descriptors regulate how UTXOs of an asset are split or merged. This is different from alloys, as the assets being merged or split always share the same group and series identifier. Let ($g$, $s$) be an asset identifier, all the following statements must be true:
   - If  ($g$, $s$)'s quantity descriptor is `immutable`, then, for each input UTXO containing  ($g$, $s$) with quantity $n$ , there must be exactly one output containing  ($g$, $s$) with quantity $n$.
-  - If  ($g$, $s$)'s quantity descriptor is `accumulator`, then, for each input UTXO containing  ($g$, $s$) with quantity $n$ , it exists one output containing  ($g$, $s$) with quantity  $m \geq n$ .
+  - If  ($g$, $s$)'s quantity descriptor is `accumulator`, then, for each input UTXO containing  ($g$, $s$) with quantity $n$ , there exists at least one output containing  ($g$, $s$) with quantity  $m \geq n$ .
   - If  ($g$, $s$)'s quantity descriptor is `fractionable`, then, for each input UTXO containing  ($g$, $s$) with quantity $n$ ,  one or more outputs containing  ($g$, $s$) whose sum is equal to $n$.
 
 #### Merging Assets
 
-Merging assets mean that we take to assets that are fungible at one level but not the other and merge them into the same UTXO.  This requires the submission of a merging transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
+Merging assets mean that we take two (or more) assets that are fungible at one level but not the other and merge them into the same UTXO.  This requires the submission of a merging transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
 - *Check merging assets:* Let $A$ be a Asset Merging Statement to merge UTXOs $u_0$, $u_1$, ..., $u_{n-1}$ into index $i$. All the following statements are true:
   - *All UTXOs share the same fungibility type:* There is a fungibility type $ft$, s.t. for all $u_i$, the fungibility type of $u_i$ is $ft$.
   - *All UTXOs share the same quantity descriptor:*  There is a quantity descriptor $qd$, s.t. for all $u_i$, the quantity descriptor of $u_i$ is $qd$.
-  - The asset created at index $i$ has a seriesAlloy if the assets are group fungible, or a groupAlloy if the assets are series fungible. In addition to the actual groups or series, the Merkle tree also considers the quantity of each series or group in the alloy.
+  - The asset created at index $i$ has a seriesAlloy if the assets are group fungible, or a groupAlloy if the assets are series fungible. Besides the actual groups or series, the Merkle tree also considers the quantity of each series or group in the alloy. To simplify the Merkle tree and to guarantee a certain uniformity in the trees, we order UTXOs in lexicographical order.
   - The Merkle root in the merged asset corresponds to the values in the input UTXOs.
 
 #### Splitting Assets
@@ -262,9 +261,9 @@ Merging assets mean that we take to assets that are fungible at one level but no
 Splitting assets is the opposite of merging them.  This requires the submission of a splitting transaction to the node. To support this kind of transactions, the following validations need to be performed on the transaction.
 
 - *Check splitting assets:* Let $A$ be a Asset Splitting Statement to split UTXO $u$ into indexes $i_0$, .., $i_{n - 1}$ . All the following statements are true:
-  - All TXOs in the output have the same fungibility type as the one in the original UTXO $u$.
-  - All TXOs in the output have the same quantity descriptor as the one in the original UTXO $u$.
-  - The Merkle root in the split asset corresponds to the values in the output TXOs.
+  - All outputs of the transaction have the same fungibility type as the one in the original UTXO $u$.
+  - All outputs of the transaction have the same quantity descriptor as the one in the original UTXO $u$.
+  - The Merkle root in the split asset corresponds to the values in each output of the transaction.
 
 ## Backwards Compatibility
 
