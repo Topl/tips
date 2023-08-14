@@ -67,7 +67,7 @@ The diagram assumes the existence of the following value types, which are used t
 
   `standard` means that the token has the standard behavior. If it is fungible one can fraction it in smaller tokens or merge two smaller tokens to make a bigger one. `accumulator` means that the token can only be merged with other fungible tokens. Once two tokens are merged they can never be separated and will always share the same UTXO. `fractionable` means that the token can only be split but not merged with other fungible tokens. Once the token was split it can never be put together again. `immutable`  means that a token can neither be accumulated nor split, it always keeps the same quantity.
 
-In brackets after the types we include (when it applies) the cardinalities of the different values. For example, Int32 [ 0 .. 1 ] represents an optional integer, or Hash32 [ 1 .. * ] a non empty list of Hash32.
+In brackets after the types we include (when it applies) the cardinalities of the different values. For example, Int32 [ 0 .. 1 ] represents an optional integer, or Hash32 [ 1 .. * ] a non empty list of Hash32. We borrowed this notation from the SysML modeling language. For more details, the reader can read the section on cardinality in the [SysML Specification](https://www.omg.org/spec/SysML/2.0/Beta1/Language/PDF).
 
 #### Asset Token
 
@@ -133,7 +133,7 @@ The series policy describes a series of tokens and the behavior of a Series Cons
 | Attribute Name          | Type                   | Description                                                  |
 | ----------------------- | ---------------------- | ------------------------------------------------------------ |
 | label                   | String                 | The human readable name of this series.                      |
-| registrationUtxo        | UtxoAddress            | The address of a UTXO. The UTXO contains the LVLs that are paid for minting the group constructor token. |
+| registrationUtxo        | UtxoAddress            | The address of a UTXO. The UTXO contains the LVLs that are paid for minting the series constructor token. |
 | tokenSupply             | Int32 [ 0 .. 1 ]       | This is an optional field. When provided it fixes the quantity of tokens that can be minted when this series is consumed, and the series constructor is burned by the minting transaction. When not provided, the series constructor is not burned, thus making the token supply unlimited. |
 | fungibility             | FungibilityType        | Describes the fungibility of the assets minted using the series constructor token derived from this policy. |
 | quantityDescriptor      | QuantityDescriptorType | Describes the behavior of the quantity field of the assets minted using the series constructor derived from this policy. |
