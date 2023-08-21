@@ -93,10 +93,11 @@ The group constructor token is a special type of token whose sole purpose is to 
 
 ##### Attributes
 
-| Attribute Name | Type   | Description                                                  |
-| -------------- | ------ | ------------------------------------------------------------ |
-| groupId        | Hash32 | The group identifier of this group constructor token. It is the digest of the Group Policy. |
-| quantity       | Int128 | The quantity of group constructor tokens stored in a given UTXO. |
+| Attribute Name | Type             | Description                                                  |
+| -------------- | ---------------- | ------------------------------------------------------------ |
+| groupId        | Hash32           | The group identifier of this group constructor token. It is the digest of the Group Policy. |
+| quantity       | Int128           | The quantity of group constructor tokens stored in a given UTXO. |
+| fixedSeries    | Hash32 [ 0 .. 1] | This is an optional field. When provided, it means that this group can only be used to mint an asset with the series that has the same identifier as this field. |
 
 #### Series Constructor Token
 
