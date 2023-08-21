@@ -10,6 +10,7 @@ The standard format for submitting a TIP should follow TIP-0001.
 | [TIP-0001](https://github.com/Topl/tips/tree/main/TIP-0001) | TIP Process      | Active    |
 | [TIP-0002](https://github.com/Topl/tips/tree/main/TIP-0002) | TIP Process      | Accepted  |
 | [TIP-0003](https://github.com/Topl/tips/tree/main/TIP-0003) | TIP Process      | Draft     |
+| [TIP-0004](https://github.com/Topl/tips/tree/main/TIP-0004) | TIP Process      | Draft     |
 
 
 This work is licensed under a
