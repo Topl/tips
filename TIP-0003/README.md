@@ -60,12 +60,12 @@ The diagram assumes the existence of the following value types, which are used t
 
 - **QuantityDescriptorType.-** It has 4 values:
 
-  - `standard`
+  - `liquid`
   - `accumulator`
   - `fractionable`
   - `immutable`
 
-  `standard` means that the token has the standard behavior. If it is fungible one can fraction it in smaller tokens or merge two smaller tokens to make a bigger one. `accumulator` means that the token can only be merged with other fungible tokens. Once two tokens are merged they can never be separated and will always share the same UTXO. `fractionable` means that the token can only be split but not merged with other fungible tokens. Once the token was split it can never be put together again. `immutable`  means that a token can neither be accumulated nor split, it always keeps the same quantity.
+  `liquid` means that the token has the standard behavior. If it is fungible one can fraction it in smaller tokens or merge two smaller tokens to make a bigger one. `accumulator` means that the token can only be merged with other fungible tokens. Once two tokens are merged they can never be separated and will always share the same UTXO. `fractionable` means that the token can only be split but not merged with other fungible tokens. Once the token was split it can never be put together again. `immutable`  means that a token can neither be accumulated nor split, it always keeps the same quantity.
 
 In brackets after the types we include (when it applies) the cardinalities of the different values. For example, Int32 [ 0 .. 1 ] represents an optional integer, or Hash32 [ 1 .. * ] a non empty list of Hash32. We borrowed this notation from the SysML modeling language. For more details, the reader can read the section on cardinality in the [SysML Specification](https://www.omg.org/spec/SysML/2.0/Beta1/Language/PDF).
 
