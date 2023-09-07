@@ -192,7 +192,7 @@ The minting of a group constructor token requires to burn a certain amount of LV
 - *Check Minting Constructor Tokens:* Let $g$ be a group identifier and $p$ the group policy whose digest is equal to $g$, a transaction is valid only if the all of the following statements are true:
   - The policy $p$ is attached to the transaction.
   - The number of group constructor tokens with identifier $g$ in the output of the transaction is strictly bigger than 0.
-  - The registration UTXO referenced in $p$ is present in the inputs and contains LVLs.
+  - The registration UTXO referenced in $p$ is present in the inputs and contains enough LVLs to satisfy the cost of minting the group constructor tokens and to satisfy any outstanding amount of LVLs in the outputs. "Outstanding amount" refers to the amount that is not satisfied by other inputs in the transaction. 
 
 #### Minting of Series Constructor Tokens
 
@@ -202,7 +202,7 @@ The minting of a series constructor token requires to burn a certain amount of L
 - *Check Minting Constructor Tokens:* Let $s$ be a series identifier and $p$ the series policy whose digest is equal to $s$, all of the following statements are true:
   - The policy $p$ is attached to the transaction.
   - The number of series constructor tokens with identifier $s$ in the output of the transaction is strictly bigger than 0.
-  - The registration UTXO referenced in $p$ is present in the inputs and contains LVLs.
+  - The registration UTXO referenced in $p$ is present in the inputs and contains enough LVLs to satisfy the cost of minting the series constructor tokens and to satisfy any outstanding amount of LVLs in the outputs. "Outstanding amount" refers to the amount that is not satisfied by other inputs in the transaction. 
 
 #### Minting of an Asset Token
 
