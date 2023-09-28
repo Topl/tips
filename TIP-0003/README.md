@@ -219,7 +219,7 @@ $$
 
   - For all $A_i$, all UTXOs referenced are distinct.
 
-  - For all $A_i$, the token supply specified in the referenced series is equal to the quantity attribute in $A_i$.
+  - The token supply specified in the referenced series times the burned series token equal to the quantity attribute in $A_i$.
 
   - Let $sin$ be the total number of series constructor tokens with identifier $s$ in the input, $sout$ the total number of series constructor tokens with identifier $s$ in the output, and $burned$ the number of $A_i$ where the referenced series specifies a token supply, then we have:
 
